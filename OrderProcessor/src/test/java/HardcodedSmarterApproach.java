@@ -11,12 +11,12 @@ import java.util.*;
  * Created by Jeremy Carey-dressler.
  * Date: 12/21/13
  */
-public class HardcodedSmarterApproach {
+public class HardcodedSmarterApproach extends GenericTest {
 
 	@Test()
 	public void smarterOrder1() {
 		Order o = new Order();
-		o.getBillingAddress().setAddress1("123 2nd 1/2 street");
+		o.getBillingAddress().setAddress1(RandomNumber.between(1, 10000) + " 2nd 1/2 street");
 		o.getBillingAddress().setAddress2("Unit 11");
 		o.getBillingAddress().setCity("Meridian");
 		o.getBillingAddress().setName("JCD");
@@ -37,6 +37,8 @@ public class HardcodedSmarterApproach {
 		items.add(createItem());
 		items.add(createItem());
 		items.add(createItem());
+
+		printOrder(o);
 
 		//Finally to the test!
 		OrderProcessing processing = new OrderProcessing();

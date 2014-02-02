@@ -29,9 +29,13 @@ public class DynamicData {
 		this.data = new ArrayList<DynamicDataMetaData>();
 	}
 
-	public DynamicData setException(Class t) {
+	public DynamicData setErrorClass(Class t) {
 		error = t;
 		return this;
+	}
+
+	public Class getErrorClass() {
+		return error;
 	}
 
 	public List<DynamicDataMetaData> getMetaData() {

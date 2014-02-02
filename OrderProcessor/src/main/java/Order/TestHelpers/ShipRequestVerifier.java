@@ -12,8 +12,8 @@ import java.util.Map;
 public class ShipRequestVerifier {
 
 	public static void verify(ShipRequest request, Order order) {
-		verifyObjectsAreEqual(order.getShippingAddress(), order.getShippingAddress());
-		verifyObjectsAreEqual(order.getBillingAddress(), order.getBillingAddress());
+		verifyObjectsAreEqual(order.getShippingAddress(), request.getShippingAddress());
+		verifyObjectsAreEqual(order.getBillingAddress(), request.getBillingAddress());
 	}
 
 	private static void verifyObjectsAreEqual(Object order, Object request) {

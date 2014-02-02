@@ -10,7 +10,7 @@ import java.util.List;
  * Created by Jeremy Carey-dressler.
  * Date: 12/21/13
  */
-public class HardcodedNaiveApproach {
+public class HardcodedNaiveApproach extends GenericTest {
 	@Test()
 	public void order1() {
 		Order o = new Order();

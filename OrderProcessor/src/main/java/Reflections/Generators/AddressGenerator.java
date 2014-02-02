@@ -17,7 +17,7 @@ public class AddressGenerator extends GenericGenerator {
 		fields.add(new DynamicData(RandomString.randomAddress1(), "Address", DynamicDataMetaData.PositiveTest));
 		fields.add(new DynamicData("", "Empty",
 				new DynamicDataMetaData[] {DynamicDataMetaData.NegativeTest, DynamicDataMetaData.EmptyValue}).
-				setException(InvalidDataError.class));
+				setErrorClass(InvalidDataError.class));
 
 		return fields;
 	}

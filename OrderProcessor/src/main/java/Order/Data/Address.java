@@ -16,7 +16,7 @@ public class Address {
 	private String address2;
 	@FieldData(dataGenerators = AverageSizedStringGenerator.class)
 	private String city;
-	@FieldData(dataGenerators = AverageSizedStringGenerator.class)
+	@FieldData(dataGenerators = StateGenerator.class)
 	private String state;
 	@FieldData(dataGenerators = AverageSizedStringGenerator.class)
 	private String country;

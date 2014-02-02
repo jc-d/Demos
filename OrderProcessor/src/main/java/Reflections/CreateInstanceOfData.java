@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class CreateInstanceOfData<T> {
 
-	public ReflectiveData<T> setObject(T object) {
+	public ReflectiveData<T> setObject(T object, List<DynamicDataMetaData> excludeList) {
 		if(object==null) throw new Error("Unable to create null object");
 		ReflectiveData<T> data = new ReflectiveData<T>(object);
 
@@ -28,9 +28,24 @@ public class CreateInstanceOfData<T> {
 						try {
 							IDataGenerator generator = (IDataGenerator) cl.newInstance();
 							generator.constructor();
-							values.addAll(generator.generateFields());
+							List<DynamicData> valuesToFilter = generator.generateFields();
+							for(DynamicData value : valuesToFilter) {
+								boolean excludeValue = false;
+								for(DynamicDataMetaData exclude : excludeList) {
+									if(value.getMetaData().contains(exclude)) {
+										excludeValue = true;
+										break;
+									}
+								}
+								if(!excludeValue)
+									values.add(value);
+							}
+
 						}catch (Throwable t) {
 							throw new Error("Failed to create new instance.  Your type might not come from IDataGenerator or generation failed.", t);
+						}
+						if(values.size()==0) {
+							throw new Error("Failed to generate any values");
 						}
 					}
 					DynamicData value = (DynamicData) values.get(RandomNumber.between(0, values.size() - 1));
@@ -44,5 +59,10 @@ public class CreateInstanceOfData<T> {
 			}
 		}
 		return data;
+	}
+
+
+	public ReflectiveData<T> setObject(T object) {
+		return setObject(object, new ArrayList<DynamicDataMetaData>());
 	}
 }

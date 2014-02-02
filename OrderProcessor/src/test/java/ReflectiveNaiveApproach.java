@@ -10,7 +10,7 @@ import java.util.*;
  * Created by Jeremy Carey-dressler.
  * Date: 12/22/13
  */
-public class ReflectiveNaiveApproach {
+public class ReflectiveNaiveApproach extends GenericTest {
 
 	@Test()
 	public void reflect() {
@@ -19,7 +19,10 @@ public class ReflectiveNaiveApproach {
 		DynamicFieldData d = new DynamicFieldData(30);
 		d.setFieldsDynamically(o.getBillingAddress());
 		d.setFieldsDynamically(o.getShippingAddress());
+		o.getBillingAddress().setState("ID");
+		o.getShippingAddress().setState("ID");
 		d.setFieldsDynamically(o.getCard());
+		o.getCard().setCardNumber(o.getCard().getCardNumber().substring(0, 12));
 
 		List<Item> items = o.getItems();
 		Item item = new Item();
@@ -30,6 +33,8 @@ public class ReflectiveNaiveApproach {
 		item.setManufacturer("JCD Inc.");
 		item.setVendorCode("ABC-123");
 		items.add(item);
+
+		printOrder(o);
 
 		//Finally to the test!
 		OrderProcessing processing = new OrderProcessing();
