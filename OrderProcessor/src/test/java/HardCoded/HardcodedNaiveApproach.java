@@ -1,28 +1,35 @@
+package HardCoded;
+
 import Order.Data.*;
 import Order.*;
-import Order.TestHelpers.*;
-import Reflections.DynamicFieldData;
+import Order.TestHelpers.AddressHelper;
+import Order.TestHelpers.ShipRequestVerifier;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Created by Jeremy Carey-dressler.
- * Date: 12/22/13
+ * Date: 12/21/13
  */
-public class ReflectiveNaiveApproach extends GenericTest {
-
+public class HardcodedNaiveApproach extends GenericTest {
 	@Test()
-	public void reflect() {
+	public void order1() {
 		Order o = new Order();
-
-		DynamicFieldData d = new DynamicFieldData(30);
-		d.setFieldsDynamically(o.getBillingAddress());
-		d.setFieldsDynamically(o.getShippingAddress());
+		o.getBillingAddress().setAddress1("123 2nd 1/2 street");
+		o.getBillingAddress().setAddress2("Unit 11");
+		o.getBillingAddress().setCity("Meridian");
+		o.getBillingAddress().setName("JCD");
 		o.getBillingAddress().setState("ID");
-		o.getShippingAddress().setState("ID");
-		d.setFieldsDynamically(o.getCard());
-		o.getCard().setCardNumber(o.getCard().getCardNumber().substring(0, 12));
+
+		o.setShippingAddress(AddressHelper.createAddressCopy(o.getBillingAddress()));
+
+		CreditCard c = new CreditCard();
+		c.setName("JCD");
+		c.setCardNumber("1234-5678-9102-3456");
+		c.setCcv(100);
+
+		o.setCard(c);
 
 		List<Item> items = o.getItems();
 		Item item = new Item();
@@ -34,13 +41,10 @@ public class ReflectiveNaiveApproach extends GenericTest {
 		item.setVendorCode("ABC-123");
 		items.add(item);
 
-		printOrder(o);
-
 		//Finally to the test!
 		OrderProcessing processing = new OrderProcessing();
 		ShipRequest request = processing.processOrder(o);
 		//Verify
 		ShipRequestVerifier.verify(request, o);
-
 	}
 }
