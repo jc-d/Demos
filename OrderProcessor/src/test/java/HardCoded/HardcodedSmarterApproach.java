@@ -4,6 +4,7 @@ import Order.Data.*;
 import Order.*;
 import Order.TestHelpers.AddressHelper;
 import Order.TestHelpers.ShipRequestVerifier;
+import Helpers.GenericTest;
 import org.testng.annotations.Test;
 import Random.*;
 
