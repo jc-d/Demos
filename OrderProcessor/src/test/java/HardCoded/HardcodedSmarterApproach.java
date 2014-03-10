@@ -3,8 +3,10 @@ package HardCoded;
 import Order.Data.*;
 import Order.*;
 import Order.TestHelpers.AddressHelper;
+import Order.TestHelpers.LogMe;
 import Order.TestHelpers.ShipRequestVerifier;
 import Helpers.GenericTest;
+import com.sun.deploy.util.StringUtils;
 import org.testng.annotations.Test;
 import Random.*;
 
@@ -45,10 +47,15 @@ public class HardcodedSmarterApproach extends GenericTest {
 
 		//Finally to the test!
 		OrderProcessing processing = new OrderProcessing();
-		ShipRequest request = processing.processOrder(o);
-		//Verify
-		ShipRequestVerifier.verify(request, o);
-
+        try {
+		    ShipRequest request = processing.processOrder(o);
+            //Verify
+            ShipRequestVerifier.verify(request, o);
+        }catch (Throwable t) {
+            String error = "Error: " + t.toString() + "\n Details: " + StringUtils.join(processing.getErrors(), ",");
+            LogMe.log(error);
+            throw new Error(error, t);
+        }
 	}
 
 	//Pretend this is behinds a framework if you like.

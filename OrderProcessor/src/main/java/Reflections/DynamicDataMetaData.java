@@ -8,6 +8,6 @@ public enum DynamicDataMetaData {
 	PositiveTest,
 	NegativeTest,
 	Unicode,
-	EmptyValue,
+	EmptyValue, ZeroValue, Boundary,
 
 }

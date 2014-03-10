@@ -1,14 +1,24 @@
 package Order.Data;
 
+import Reflections.FieldData;
+import Reflections.Generators.AverageSizedStringGenerator;
+import Reflections.Generators.PositiveDoubleGenerator;
+
 /**
  * Created by Jeremy Carey-dressler.
  * Date: 12/21/13
  */
 public class Item {
-	private double cost;
+
+    @FieldData(dataGenerators = PositiveDoubleGenerator.class)
+    private double cost;
+    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
 	private String name;
+    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
 	private String description;
+    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
 	private String manufacturer;
+    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
 	private String vendorCode;
 	private boolean ableToOrder;
 

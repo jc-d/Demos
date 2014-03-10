@@ -1,6 +1,7 @@
 package Order;
 
 import Order.Data.InvalidDataError;
+import Order.Data.Item;
 import Order.Data.Order;
 import Order.Data.ShipRequest;
 
@@ -22,7 +23,20 @@ public class OrderProcessing {
 		if(!validateState(o.getBillingAddress().getState())) errors.add("state: Invalid Billing State");
 		if(!validateState(o.getShippingAddress().getState())) errors.add("state: Invalid Shipping State");
 		if(o.getCard().getCardNumber().length()>20 || o.getCard().getCardNumber().length()<2) errors.add("cardNumber: Invalid Credit Card #");
-		if(errors.size()==0)
+		for(Item i : o.getItems()) {
+            if(i.isAbleToOrder()) {
+                if(i.getCost()>0) {
+                    for(char c : i.getName().toCharArray()) {
+                        if(c >= 256) {
+                            errors.add("item name: " + i.getName() + " contains non-ascii characters.");
+                        }
+                    }
+                } else {
+                    errors.add("cost: Below 0");//intentional error, includes 0
+                }
+            }
+        }
+        if(errors.size()==0)
 			return true;
 		return false;
 	}

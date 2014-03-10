@@ -14,6 +14,6 @@ import java.lang.reflect.Method;
 public class AnnotationTransformer implements IAnnotationTransformer {
 	@Override
 	public void transform(ITestAnnotation iTestAnnotation, Class aClass, Constructor constructor, Method method) {
-		iTestAnnotation.setDataProviderClass(ParametrizedData.class);
+		iTestAnnotation.setDataProviderClass(ParametrizedData.class);//Notice how this overrides the parametrized datasource
 	}
 }

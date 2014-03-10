@@ -55,47 +55,74 @@ public class ReflectiveSmarterApproach extends GenericTest {
 			request = processing.processOrder(o);
 		} catch (Throwable t) {
 			error = t;
-		}
-		boolean atLeastOneErrorFound = false;
-		int atLeastOneErrorIsRightClass = -1;//TODO trillean.
-		Map<String, Boolean> hasNameInErrors = new HashMap<String, Boolean>();
-		for(Map.Entry<String, DynamicData> entry : shippingAddress.getFieldNameToDynamicData().entrySet()) {
-			if(entry.getValue().getErrorClass()!= null && error!=null && atLeastOneErrorIsRightClass!=1) {
-				atLeastOneErrorIsRightClass=0;
-				if(entry.getValue().getErrorClass().equals(error.getClass())) {
-					atLeastOneErrorIsRightClass=1;
-				}
-			}
-			if(entry.getValue().getMetaData().contains(DynamicDataMetaData.NegativeTest)) {
-				atLeastOneErrorFound = true;
-				if(error==null)
-					throw new Error("Expected error in " + entry.getKey() + " but didn't get one.");
-				if(processing!=null) {
-					hasNameInErrors.put(entry.getKey(), false);
-					for(String errorMessage : processing.getErrors()) {
-						if(errorMessage.contains(entry.getKey())) {
-							hasNameInErrors.put(entry.getKey(), true);
-							break;
-						}
-					}
-				}
-			}
-		}
-		if(error!=null && !atLeastOneErrorFound)
+        }
+
+        ValidationData validationData = verifyData(shippingAddress, "ShippingAddress", error, processing);
+
+        if(error!=null && !validationData.atLeastOneErrorFound)
 			throw new Error("An exception was thrown, but none was expected.", error);
 
 		//Verify
 		if(request!=null)
 			ShipRequestVerifier.verify(request, o);
-		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<String, Boolean> entry : hasNameInErrors.entrySet()) {
-			if(!entry.getValue()) {
-				sb.append("Name " + entry.getKey() + " was not found in the errors but was expected.\n");
-			}
-		}
-		if(sb.length()!=0) {
-			LogMe.log("ERRORS: " + sb.toString());
-			throw new Error(sb.toString());
+
+		if(validationData.getErrors().length()!=0) {
+			LogMe.log("ERRORS: \n\n" + validationData.getErrors());
+			throw new Error("\n" + validationData.getErrors());
 		}
 	}
+
+    private class ValidationData {
+        private StringBuilder errorMessages = new StringBuilder();
+        public boolean atLeastOneErrorFound;
+        public Map<String, Boolean> hasNameInErrors = new HashMap<String, Boolean>();
+        public void addError(String error) {
+            if(error == null || error.length()==0) return;
+            errorMessages.append(" - Error: " + error + "\n");
+        }
+        public void addData(ValidationData data) {
+            this.addError(data.getErrors());
+            if(data.atLeastOneErrorFound) this.atLeastOneErrorFound = true;
+        }
+        public String getErrors() { return errorMessages.toString(); }
+    }
+
+    private ValidationData verifyData(ReflectiveData<?> data, String type, Throwable error, OrderProcessing processing) {
+
+        ValidationData validator = new ValidationData();
+        validator.atLeastOneErrorFound = false;
+        int atLeastOneErrorIsRightClass = -1;//TODO trillean.
+        for(Map.Entry<String, DynamicData> entry : data.getFieldNameToDynamicData().entrySet()) {
+            if(entry.getValue().getErrorClass()!= null && error!=null && atLeastOneErrorIsRightClass!=1) {
+                atLeastOneErrorIsRightClass=0;
+                if(entry.getValue().getErrorClass().equals(error.getClass())) {
+                    atLeastOneErrorIsRightClass=1;
+                }
+            }
+            if(entry.getValue().getMetaData().contains(DynamicDataMetaData.NegativeTest)) {
+                validator.atLeastOneErrorFound = true;
+                if(error==null) {
+                    validator.addError("Expected error in <" + entry.getKey() + "> of " + type + " but didn't get one.");
+                }
+                if(processing!=null) {
+                    validator.hasNameInErrors.put(entry.getKey(), false);
+                    for(String errorMessage : processing.getErrors()) {
+                        if(errorMessage.contains(entry.getKey())) {
+                            validator.hasNameInErrors.put(entry.getKey(), true);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        for(Map.Entry<String, Boolean> entry :  validator.hasNameInErrors.entrySet()) {
+            if(!entry.getValue()) {
+                DynamicData dynamicData = data.getFieldNameToDynamicData().get(entry.getKey());
+                validator.addError("Name <" + entry.getKey() + "> was not found in the errors for " + type + " but was expected. " +
+                        "Debug Data:\nComment: " + dynamicData.getComment() + "; Value: <" + dynamicData.toString() + ">.");
+            }
+        }
+
+        return validator;
+    }
 }
