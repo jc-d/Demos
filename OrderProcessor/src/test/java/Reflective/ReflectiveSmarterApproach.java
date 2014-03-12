@@ -37,6 +37,14 @@ public class ReflectiveSmarterApproach extends GenericTest {
 		DynamicFieldData d = new DynamicFieldData(14);
 		d.setFieldsDynamically(o.getCard());
 
+//Walk through what this does and doesn't do.
+//        ReflectiveData<Item> item = new CreateInstanceOfData<Item>().setObject(new Item(), exclude);
+//        item.getObject().setAbleToOrder(true);
+//        o.getItems().add(item.getObject());
+//
+//        LogMe.log(MapToTable.mapToTable(item.getFieldNameToDynamicData()));
+
+
 		Item item = new Item();
 		item.setName("Test Pro 3000!");
 		item.setDescription("1000x better than Test Pro 3!");

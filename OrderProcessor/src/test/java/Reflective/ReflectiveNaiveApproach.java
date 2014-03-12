@@ -44,6 +44,5 @@ public class ReflectiveNaiveApproach extends GenericTest {
 		ShipRequest request = processing.processOrder(o);
 		//Verify
 		ShipRequestVerifier.verify(request, o);
-
 	}
 }

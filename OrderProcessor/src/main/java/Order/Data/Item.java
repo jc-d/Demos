@@ -2,6 +2,7 @@ package Order.Data;
 
 import Reflections.FieldData;
 import Reflections.Generators.AverageSizedStringGenerator;
+import Reflections.Generators.AverageSizedStringPositiveGenerator;
 import Reflections.Generators.PositiveDoubleGenerator;
 
 /**
@@ -12,13 +13,13 @@ public class Item {
 
     @FieldData(dataGenerators = PositiveDoubleGenerator.class)
     private double cost;
-    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
+    @FieldData(dataGenerators = AverageSizedStringPositiveGenerator.class)
 	private String name;
-    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
+    @FieldData(dataGenerators = AverageSizedStringPositiveGenerator.class)
 	private String description;
-    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
+    @FieldData(dataGenerators = AverageSizedStringPositiveGenerator.class)
 	private String manufacturer;
-    @FieldData(dataGenerators = AverageSizedStringGenerator.class)
+    @FieldData(dataGenerators = AverageSizedStringPositiveGenerator.class)
 	private String vendorCode;
 	private boolean ableToOrder;
 
