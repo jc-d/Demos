@@ -12,7 +12,7 @@ public class Order {
 	private Address billingAddress;
 	private List<Item> items;
 	private CreditCard card;
-	private int orderVersion = 2;
+	private int orderVersion = 2;//ONLY edit this via reflections.
 
 	public int getVersion() { return orderVersion; }
 

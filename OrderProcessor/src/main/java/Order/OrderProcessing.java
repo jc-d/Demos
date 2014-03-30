@@ -18,19 +18,18 @@ public class OrderProcessing {
 	public List<String> getErrors() { return errors; }
 
 	private boolean isOrderValid(Order o) {
-		if(o.getItems().size()>10) return false;
 		if(!validateState(o.getBillingAddress().getState())) errors.add("state: Invalid Billing State");
 		if(!validateState(o.getShippingAddress().getState())) errors.add("state: Invalid Shipping State");
 		if(o.getCard().getCardNumber().length()>20 || o.getCard().getCardNumber().length()<2) errors.add("cardNumber: Invalid Credit Card #");
 
         if(o.getVersion()>3) {
-            addressValidator(o.getBillingAddress(), "Billing");//TODO FIX ME
+            addressValidator(o.getBillingAddress(), "Billing");//TODO FIX ME by changing version #
             addressValidator(o.getShippingAddress(), "Shipping");
         }
 
 		for(Item i : o.getItems()) {
             if(i.isAbleToOrder()) {
-                if(i.getCost()>0 || (i.getCost()>=0 && o.getVersion()>2)) {//TODO FIX ME
+                if(i.getCost()>0 || (i.getCost()>=0 && o.getVersion()>2)) {//TODO FIX ME by changing version #
                     if(Utils.hasUnicode(i.getName())) {
                         errors.add("item name: " + i.getName() + " contains non-ascii characters.");
                     }
@@ -70,7 +69,7 @@ public class OrderProcessing {
 			throw new InvalidDataError("Unable to process order");
 		ShipRequest r = new ShipRequest();
 		r.setBillingAddress(o.getBillingAddress());
-		if(o.getVersion()==1)
+		if(o.getVersion()==1)//TODO FIX ME: Not demo'd but another example of a bug.
 			r.setShippingAddress(o.getBillingAddress());
 		else
 			r.setShippingAddress(o.getShippingAddress());
