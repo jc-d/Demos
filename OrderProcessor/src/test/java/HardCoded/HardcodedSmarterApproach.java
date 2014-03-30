@@ -52,13 +52,16 @@ public class HardcodedSmarterApproach extends GenericTest {
             //Verify
             ShipRequestVerifier.verify(request, o);
         }catch (Throwable t) {
-            String error = "Error: " + t.toString() + "\n Details: " + StringUtils.join(processing.getErrors(), ",");
+            String error = "Error: " + t.toString() + "\n Details: " + Arrays.toString(processing.getErrors().toArray());
             LogMe.log(error);
             throw new Error(error, t);
         }
 	}
 
 	//Pretend this is behinds a framework if you like.
+    //But notice how we are forced to 'hard code' unicode characters into each field.  How do we test each field?
+    //How do you trust their isn't a relationship between the fields or that if all the fields were at max
+    //length or ... that it wouldn't bust?
 	public Item createItem() {
 		Item item = new Item();
 		item.setName("Test Pro 3000! - "  + RandomString.randomUnicode(10));

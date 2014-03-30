@@ -1,12 +1,11 @@
 package Order;
 
-import Order.Data.InvalidDataError;
-import Order.Data.Item;
-import Order.Data.Order;
-import Order.Data.ShipRequest;
+import Order.Data.*;
+import Reflections.Fields;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jeremy Carey-dressler.
@@ -23,16 +22,20 @@ public class OrderProcessing {
 		if(!validateState(o.getBillingAddress().getState())) errors.add("state: Invalid Billing State");
 		if(!validateState(o.getShippingAddress().getState())) errors.add("state: Invalid Shipping State");
 		if(o.getCard().getCardNumber().length()>20 || o.getCard().getCardNumber().length()<2) errors.add("cardNumber: Invalid Credit Card #");
+
+        if(o.getVersion()>3) {
+            addressValidator(o.getBillingAddress(), "Billing");//TODO FIX ME
+            addressValidator(o.getShippingAddress(), "Shipping");
+        }
+
 		for(Item i : o.getItems()) {
             if(i.isAbleToOrder()) {
-                if(i.getCost()>0) {
-                    for(char c : i.getName().toCharArray()) {
-                        if(c >= 256) {
-                            errors.add("item name: " + i.getName() + " contains non-ascii characters.");
-                        }
+                if(i.getCost()>0 || (i.getCost()>=0 && o.getVersion()>2)) {//TODO FIX ME
+                    if(Utils.hasUnicode(i.getName())) {
+                        errors.add("item name: " + i.getName() + " contains non-ascii characters.");
                     }
                 } else {
-                    errors.add("cost: Below 0");//intentional error, includes 0
+                    errors.add("cost: Below 0 [" + i.getCost() + "]");//intentional error, includes 0
                 }
             }
         }
@@ -40,6 +43,21 @@ public class OrderProcessing {
 			return true;
 		return false;
 	}
+
+    public void addressValidator(Address address, String type) {
+        for(Map.Entry<String, Object> field : Fields.getFields(address).entrySet()) {
+            if(field.getValue() == null) continue;//not sure what to do here...
+            if(Utils.hasUnicode(field.getValue() + "")) {
+                errors.add("Address " + type + " has unicode characters in " + field.getKey());
+            }
+            if("".equals(field.getValue())) {
+                errors.add("Address " + type + " is blank in " + field.getKey());
+            }
+            if(field.getValue().toString().length()>40) {
+                errors.add("Address " + type + " is too long in " + field.getKey());
+            }
+        }
+    }
 
 	private boolean validateState(String state) {
 		if(state.equalsIgnoreCase("ID")) return true;

@@ -11,6 +11,11 @@ import java.util.*;
  */
 public class ExampleOfList {
 
+    /**
+     * This will run any arbitrary command against a list.
+     * This particular implementation is limited to strings, but it could be
+     * any type you wanted.
+     */
     @Test()
     public void runOnEachItemInList() {
         List<String> list = new ArrayList<String>();
@@ -18,7 +23,7 @@ public class ExampleOfList {
         list.add("TWO");
         list.add("333");
         list.add("FouR");
-        for(String item : actOnString(list, "toUpperCase")) {
+        for(String item : actOnString(list, "toUpperCase")) {//toLowerCase could just as easily be run.
             LogMe.log(item);
         }
     }

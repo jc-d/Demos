@@ -26,17 +26,27 @@ public class DynamicFieldData {
 		}
 	}
 
-	protected void setValue(Field f, Object object) {
+    /**
+     * All we are doing here is taking the field and setting it with a pre-determined
+     * random value, using the typing system to do the dirty work...  we could use
+     * something slightly more intelligent, like typing with name overrides, but
+     * that requires lots of custom code and maintenance.  Not ideal.
+     * @param field
+     * @param object
+     */
+	protected void setValue(Field field, Object object) {
 		try {
-			Class<?> t = f.getType();
+			Class<?> t = field.getType();
 			if(String.class.equals(t)) {
-				f.set(object, RandomString.randomAlphaNumeric(stringLength));
+                //I could have if random ==1 do x, random == 2 do y (say alpha, numeric, unicode, etc)
+                // but how do I know what to expect?  Should it pass or fail?
+				field.set(object, RandomString.randomAlphaNumeric(stringLength));
 			} else if(int.class.equals(t) || Integer.class.equals(t)) {
-				f.set(object, RandomNumber.randomInt());
+				field.set(object, RandomNumber.randomInt());
 			} else if(float.class.equals(t) || Float.class.equals(t)) {
-				f.set(object, RandomNumber.randomFloat());
+				field.set(object, RandomNumber.randomFloat());
 			} else if(double.class.equals(t) || Double.class.equals(t)) {
-				f.set(object, RandomNumber.randomDouble());
+				field.set(object, RandomNumber.randomDouble());
 			}
 		}catch (Throwable t) { throw new Error(t); }
 	}

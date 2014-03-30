@@ -40,12 +40,11 @@ public class CreateInstanceOfData<T> {
 								if(!excludeValue)
 									values.add(value);
 							}
-
+                            if(values.size()==0) {
+                                throw new Error("Failed to generate any values.  Original List Size: " + valuesToFilter.size() + " with exclude list of: " + Arrays.toString(excludeList.toArray()));
+                            }
 						}catch (Throwable t) {
 							throw new Error("Failed to create new instance.  Your type might not come from IDataGenerator or generation failed.", t);
-						}
-						if(values.size()==0) {
-							throw new Error("Failed to generate any values");
 						}
 					}
 					DynamicData value = (DynamicData) values.get(RandomNumber.between(0, values.size() - 1));

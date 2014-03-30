@@ -14,6 +14,9 @@ import java.util.Map;
  */
 public class DebugData {
 
+    /**
+     * This is a simple non-framework method to demonstrate how to print out debug data.
+     */
     @Test()
     public void debugAnOrder() {
         Item item = new Item();

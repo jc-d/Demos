@@ -30,12 +30,12 @@ public class GenericTest {
 		if(value.contains("@") && value.contains("Order.Data")) {//TODO regex me
 			StringBuilder sb = new StringBuilder();
 			sb.append(tabs + fieldName + ":\n");
-			if(obj instanceof Collection<?>) {
+			if(obj instanceof Collection<?>) { //if this was serious, we'd also have to handle maps, which are a whole 'nother ball of fun.
 				//unroll the collection.
 				Collection<?> col = (Collection<?>) obj;
 				for(Object item : col) {
 					sb.append(tabs + "\tCollection Item:\n");
-					for(String subField : Fields.getFieldNames(item)) {
+					for(String subField : Fields.getFieldNames(item)) {//In theory I should use recursion to unroll possible collection of collections.
 						sb.append(tabs + "\t\t" + getPrintableDataFromObject(item, subField, tabs + "\t") + "\n");
 					}
 				}

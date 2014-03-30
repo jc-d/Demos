@@ -19,11 +19,9 @@ public class AverageSizedStringPositiveGenerator extends AverageSizedStringGener
 
         List<DynamicData> fields = new ArrayList<DynamicData>();
         for(DynamicData field :  super.generateFields()) {
-            for(DynamicDataMetaData meta : field.getMetaData()) {
-                if(meta.equals(DynamicDataMetaData.PositiveTest)) {
-                    fields.add(field);
-                    break;//exit inner for loop
-                }
+            if(field.getMetaData().contains(DynamicDataMetaData.PositiveTest) &&
+                    !field.getMetaData().contains(DynamicDataMetaData.Unicode)) {
+                fields.add(field);
             }
         }
 

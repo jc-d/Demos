@@ -5,6 +5,7 @@ import Order.*;
 import Order.TestHelpers.*;
 import Reflections.*;
 import Helpers.GenericTest;
+import org.apache.commons.lang.StringUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
@@ -17,13 +18,28 @@ public class ReflectiveSmarterApproach extends GenericTest {
 	@Test()
 	public void reflectSmart() {
 		List<DynamicDataMetaData> exclude = new ArrayList<DynamicDataMetaData>();
-		//exclude.add(DynamicDataMetaData.NegativeTest);
+		exclude.add(DynamicDataMetaData.NegativeTest);
 		exclude.add(DynamicDataMetaData.EmptyValue);
 		testWithReflections(exclude);
 	}
 
+    @Test()//'Prove' the system seems reasonably stable by running lots of iterations
+    public void reflectSmartRunUntilDeadOr1000Runs() {
+        List<DynamicDataMetaData> exclude = new ArrayList<DynamicDataMetaData>();
+        exclude.add(DynamicDataMetaData.NegativeTest);
+        exclude.add(DynamicDataMetaData.EmptyValue);
+        for(int i = 0; i!=1000; i++) {
+            LogMe.log("On Run " + i);
+            LogMe.log("---------------------------------------------------");
+            testWithReflections(exclude);
+        }
+    }
+
 	public void testWithReflections(List<DynamicDataMetaData> exclude) {
 		Order o = new Order();
+        //TODO Change me to see different behaviour by version.
+        Fields.setField("orderVersion", o, 2);//3+ == Fixed cost [Positive cases], 4+ == fixes address validation [Negative cases, empty]
+       //o.setVersion(2);  This does not exist, only through reflections can you access this.
 		ReflectiveData<Address> shippingAddress = new CreateInstanceOfData<Address>().setObject(new Address(), exclude);
 		o.setShippingAddress(shippingAddress.getObject());
 
@@ -37,14 +53,17 @@ public class ReflectiveSmarterApproach extends GenericTest {
 		DynamicFieldData d = new DynamicFieldData(14);
 		d.setFieldsDynamically(o.getCard());
 
+
+
 //Walk through what this does and doesn't do.
 //        ReflectiveData<Item> item = new CreateInstanceOfData<Item>().setObject(new Item(), exclude);
 //        item.getObject().setAbleToOrder(true);
 //        o.getItems().add(item.getObject());
 //
 //        LogMe.log(MapToTable.mapToTable(item.getFieldNameToDynamicData()));
+//        //TODO UNCOMMENT VALIDATION BELOW!
 
-
+////Comment out this code to do walk through above.
 		Item item = new Item();
 		item.setName("Test Pro 3000!");
 		item.setDescription("1000x better than Test Pro 3!");
@@ -53,6 +72,7 @@ public class ReflectiveSmarterApproach extends GenericTest {
 		item.setManufacturer("JCD Inc.");
 		item.setVendorCode("ABC-123");
 		o.getItems().add(item);
+//        //End of comment out piece.
 
 		printOrder(o);
 		Throwable error=null;
@@ -65,18 +85,27 @@ public class ReflectiveSmarterApproach extends GenericTest {
 			error = t;
         }
 
+        String errors ="";
+
         ValidationData validationData = verifyData(shippingAddress, "ShippingAddress", error, processing);
+        validationData.addData(verifyData(billingAddress, "BillingAddress", error, processing));
+
+        //Excluded if we don't generate the item using dynamic data.
+        //validationData.addData(verifyData(item, "Item", error, processing));
 
         if(error!=null && !validationData.atLeastOneErrorFound)
-			throw new Error("An exception was thrown, but none was expected.", error);
+            throw new Error("An exception was thrown, but none was expected (no negative values given). " +  Arrays.toString(processing.getErrors().toArray()), error);
 
-		//Verify
+	    //Verify
 		if(request!=null)
 			ShipRequestVerifier.verify(request, o);
 
-		if(validationData.getErrors().length()!=0) {
-			LogMe.log("ERRORS: \n\n" + validationData.getErrors());
-			throw new Error("\n" + validationData.getErrors());
+        LogMe.log("Order Processor Errors: " +  Arrays.toString(processing.getErrors().toArray()));
+
+        errors = validationData.getErrors();
+        if(errors.length()!=0) {
+			LogMe.log("ERRORS: \n\n" + errors);
+			throw new Error("\n" + errors);
 		}
 	}
 

@@ -18,8 +18,9 @@ public class AverageSizedStringGenerator extends GenericGenerator {
 	protected DynamicDataMetaData isPositiveOrNegative(String value) {
 		if(value==null) return DynamicDataMetaData.NegativeTest;
 		if(value.length() >= minLength) {
-			if(value.length() < maxLength)
+			if(value.length() <= maxLength) {
 				return DynamicDataMetaData.PositiveTest;
+            }
 		}
 		return DynamicDataMetaData.NegativeTest;
 	}
@@ -28,16 +29,18 @@ public class AverageSizedStringGenerator extends GenericGenerator {
 	public List<DynamicData> generateFields() {
 
 		List<DynamicData> fields = new ArrayList<DynamicData>();
-		String value = "";
+
+        String value = "";
 		fields.add(new DynamicData(value, "Empty",
 				new DynamicDataMetaData[] {isPositiveOrNegative(value), DynamicDataMetaData.EmptyValue}).
 				setErrorClass(InvalidDataError.class));
+
 		value = RandomString.randomUnicode(RandomNumber.between(minLength, maxLength));
 		fields.add(new DynamicData(value, "Unicode",
 				new DynamicDataMetaData[] {isPositiveOrNegative(value), DynamicDataMetaData.Unicode}));
 
 		value = RandomString.randomUnicode(RandomNumber.between(maxLength + 1, maxLength * 2));
-		fields.add(new DynamicData(value, "Unicode",
+		fields.add(new DynamicData(value, "Unicode - Beyond max length",
 				new DynamicDataMetaData[] {isPositiveOrNegative(value), DynamicDataMetaData.Unicode}).
 				setErrorClass(InvalidDataError.class));
 
@@ -46,7 +49,7 @@ public class AverageSizedStringGenerator extends GenericGenerator {
 				new DynamicDataMetaData[] {isPositiveOrNegative(value)}));
 
 		value = RandomString.randomAlphaNumeric(RandomNumber.between(maxLength + 1, maxLength * 2));
-		fields.add(new DynamicData(value, "AlphaNumeric",
+		fields.add(new DynamicData(value, "AlphaNumeric - Beyond max Length",
 				new DynamicDataMetaData[] {isPositiveOrNegative(value)}).
 				setErrorClass(InvalidDataError.class));
 
